@@ -1,0 +1,80 @@
+FROM ubuntu:22.04
+
+LABEL maintainer="Jagan Teki <jagan@edgeble.ai>"
+LABEL release="ubunutu-22.04"
+LABEL description="Ubuntu 22.04 Docker"
+
+# Set up the non-interactive container build
+ARG DEBIAN_FRONTEND=noninteractive
+
+# Set up locales
+RUN apt-get update && apt-get install -y \
+    locales sudo && \
+    dpkg-reconfigure locales && \
+    locale-gen en_US.UTF-8 && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
+
+ENV LANG en_US.utf8
+
+# Install essential packages
+RUN apt-get update && apt-get install -y \
+    apt-utils \
+    git \
+    bc \
+    chrpath \
+    cpio \
+    diffstat \
+    gawk \
+    texinfo \
+    wget \
+    lz4 \
+    build-essential \
+    fdisk \
+    cmake \
+    lsb-release \
+    vim \
+    device-tree-compiler \
+    rsync \
+    python2 \
+    libssl-dev \
+    libgmp-dev \
+    libmpc-dev \
+    flex \
+    bison \
+    expect \
+    expect-dev \
+    python-is-python3 \
+    python3-pip \
+    podman \
+    unzip \
+    file \
+    bsdmainutils \
+    dosfstools && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
+
+# gdown
+RUN pip install gdown kas
+
+# Install and update ca-certificates
+RUN apt-get update && apt-get install -y \
+    apt-transport-https \
+    ca-certificates && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/* && \
+    update-ca-certificates
+
+# Install Java and curl
+RUN apt-get update && apt-get install -y \
+    default-jre \
+    curl && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
+
+RUN useradd -ms /bin/bash build
+RUN usermod -aG sudo build
+RUN echo "build ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/build
+
+USER build
+WORKDIR /home/build
