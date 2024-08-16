@@ -72,10 +72,9 @@ RUN apt-get update && apt-get install -y \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
-RUN echo "build ALL=NOPASSWD: ALL" > /etc/sudoers.d/build-nopasswd && \
-    chmod 660 /etc/sudoers.d/build-nopasswd
-
-RUN groupadd build -g 30000 && \
-    useradd build -u 30000 -g 30000 --create-home --home-dir /build
+RUN useradd -ms /bin/bash build
+RUN usermod -aG sudo build
+RUN echo "build ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/build
 
 USER build
+WORKDIR /home/build
